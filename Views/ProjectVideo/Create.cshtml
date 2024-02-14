@@ -1,0 +1,86 @@
+@using PIPMUNI_ARG.Models.Domain;
+@model ProjectVideo
+@{
+    ViewData["Title"] = "Crear Video";
+    ViewData["isBasicView"] = true;
+}
+
+@await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+
+<form id="FormProjectVideo" asp-action="Create" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <div class="form-group mb-3" id="divProject">
+            <label asp-for="Project" class="control-label" title="Proyecto al que corresponde el video"></label>
+            @if (((int?)@ViewBag.projectId) != null && ((int?)@ViewBag.projectId).Value > 0)
+            {
+                @Html.HiddenFor(m => m.Project)
+                <select disabled asp-for="Project" name="Project" class="form-select" asp-items="ViewBag.listProject" id="Project"></select>
+            }
+            else
+            {
+                <select asp-for="Project" name="Project" class="form-select" asp-items="ViewBag.listProject" id="Project"></select>
+            }
+            <span asp-validation-for="Project" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3" id="divLink">
+            <label asp-for="Link" class="control-label" title="Enlace que permite acceder al video. El video puede publicarse en una plataforma como YouTube e incluir aquí el enlace correspondiente."></label>
+            <input asp-for="Link" type="text" class="form-control">
+            <span asp-validation-for="Link" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3" id="divDescription">
+            <label asp-for="Description" class="control-label" title="Descripción del video"></label>
+            <textarea asp-for="Description" type="text" rows="5" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divVideoDate">
+            <label asp-for="VideoDate" class="control-label" title="Fecha en que se produjo el video"></label>
+            <input asp-for="VideoDate" type="date" class="form-control">
+            <span asp-validation-for="VideoDate" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divUploadDate">
+            <label asp-for="UploadDate" class="control-label" title="Fecha en que se registra el video en el sistema."></label>
+            <input asp-for="UploadDate" type="date" class="form-control" readonly>
+            <span asp-validation-for="UploadDate" class="text-danger"></span>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+
+    <div class="form-group mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar</button>
+    </div>
+
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

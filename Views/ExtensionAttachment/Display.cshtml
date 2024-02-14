@@ -1,0 +1,82 @@
+@model PIPMUNI_ARG.Models.Domain.ExtensionAttachment
+@{
+    ViewData["Title"] = "Ver Anexo Ampliación";
+    ViewBag.WorkingInContract = true;
+    ViewData["isBasicView"] = true;
+}
+
+
+
+<form asp-action="Display" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <input type="hidden" asp-for="Id" />
+    </div>
+    <div class="row">
+        <div class="form-group mb-3">
+            <label asp-for="Extension" class="control-label" title="Ampliación de plazo a la que corresponde el anexo.">Ampliación</label>
+            <select disabled asp-for="Extension" class="form-select display" asp-items="ViewBag.listExtension"></select>
+            <span asp-validation-for="Extension" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Title" class="control-label" title="Título que identifica el documento o anexo cargado."></label>
+            <input disabled asp-for="Title" type="text" class="form-control">
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divFileName">
+            <label asp-for="FileName" class="control-label" title="Archivo que se anexa a la ampliación."></label>
+            <input hidden id="FileName" asp-for="FileName" type="text" class="form-control" placeholder="(sin archivo seleccionado)">
+            <div class="input-group mb-3">
+                @if (!string.IsNullOrEmpty(Model.FileName))
+                {
+                    <a class="btn btn-link" asp-area="" asp-controller="ExtensionAttachment" asp-action="Download" asp-route-serverFileName="@Model.FileName" asp-route-downloadName="Archivo" asp-route-extensionId=@ViewBag.extensionId>
+                        <i class="bi-download"></i>&nbsp; Descargar
+                    </a>
+                }
+            </div>
+            <span asp-validation-for="FileName" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="DateAttached" class="control-label" title="Fecha en la que se carga el anexo en el sistema."></label>
+            <input disabled asp-for="DateAttached" type="date" class="form-control">
+            <span asp-validation-for="DateAttached" class="text-danger"></span>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+    <div class="mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+    </div>
+
+
+
+
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

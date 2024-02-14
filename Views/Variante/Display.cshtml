@@ -1,0 +1,165 @@
+@using PIPMUNI_ARG.Models.Domain;
+@model PIPMUNI_ARG.Models.Domain.Variante
+@{
+    ViewData["Title"] = "Ver Variante de Obra";
+    ViewBag.WorkingInContract = true;
+    ViewData["isBasicView"] = true;
+}
+
+
+
+<form asp-action="Display" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <input type="hidden" asp-for="Id" />
+    </div>
+    <div class="row">
+        <div class="form-group mb-3">
+            <label asp-for="Contract" class="control-label" title="Obra o contrato al que modifica la variante.">Obra/Contrato</label>
+            <select disabled asp-for="Contract" class="form-select display" asp-items="ViewBag.listContract"></select>
+            <span asp-validation-for="Contract" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="Code" class="control-label" title="Código de la Variante asignado automáticamente por el sistema. Se usa para que los usuarios puedan buscar o identificar la variante."></label>
+            <input disabled asp-for="Code" type="text" class="form-control">
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Motivo" class="control-label" title="El motivo por el cual se expide la variante.">Tipo</label>
+            <select disabled asp-for="Motivo" class="form-select display" asp-items="ViewBag.listMotivo"></select>
+            <span asp-validation-for="Motivo" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Value" class="control-label" title="Costo que tiene la variante"></label>
+            @Html.TextBoxFor(m => m.Value, "{0:n2}", new { @class= "form-control", disabled="disabled"})
+            <span asp-validation-for="Value" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="group-fields">
+        <div class="row">
+            <div class="form-group mb-3 col-sm-6">
+                <label asp-for="DateDelivery" class="control-label" title="Fecha en la que se presento el tramite de la variante para que se apruebe."></label>
+                <input disabled asp-for="DateDelivery" type="date" class="form-control">
+                <span asp-validation-for="DateDelivery" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3 col-sm-6">
+                <label asp-for="DateApproved" class="control-label" title="Fecha de aprobación de la variante."></label>
+                <input disabled asp-for="DateApproved" type="date" class="form-control">
+                <span asp-validation-for="DateApproved" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Record" class="control-label" title="Nº de expediente por el que se tramita la variante."></label>
+            <input disabled asp-for="Record" type="text" class="form-control">
+            <span asp-validation-for="Record" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Stage" class="control-label" title="A INICIAR-EN PROCESO-APROBADA">Estado</label>
+            <select disabled asp-for="Stage" class="form-select display" asp-items="ViewBag.listStage"></select>
+            <span asp-validation-for="Stage" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divAttachment">
+            <label asp-for="Attachment" class="control-label" title="Archivo adjunto que contiene el convenio o el acta de la variante de obra."></label>
+            <input hidden id="Attachment" asp-for="Attachment" type="text" class="form-control" placeholder="(sin archivo seleccionado)">
+            <div class="input-group mb-3">
+                @if (!string.IsNullOrEmpty(Model.Attachment))
+                {
+                    <a class="btn btn-link" asp-area="" asp-controller="Variante" asp-action="Download" asp-route-serverFileName="@Model.Attachment" asp-route-downloadName="Acto de aprobación" asp-route-contractId=@ViewBag.contractId>
+                        <i class="bi-download"></i>&nbsp; Descargar
+                    </a>
+                }
+            </div>
+            <span asp-validation-for="Attachment" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+    <div class="mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+    </div>
+
+
+
+
+</form>
+<hr class="mb-5 mt-5" />
+<div class="row mb-5">
+    <div class="col-12 col-sm-12 col-lg-10 col-xl-8">
+        <div class="group-children">
+            <h4>Otros anexos</h4>
+
+            <!-- select table -->
+            <table class="table select-table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameForInnerType((VarianteAttachment s) => s.Title) <i class=@ViewBag.titleIcon></i>
+                        </th>
+                        <th>
+                            Descargar
+                        </th>
+                        <th>
+                            @Html.DisplayNameForInnerType((VarianteAttachment s) => s.DateAttached) <i class=@ViewBag.dateAttachedIcon></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.VarianteAttachments?.Count() > 0)
+                    {
+                        @foreach (var varianteAttachment in Model.VarianteAttachments)
+                        {
+                            <tr>
+                                <td class="sel-row">
+                                    @Html.DisplayFor(modelItem => varianteAttachment.Title)
+                                </td>
+                                <td class="sel-row">
+                                    <a asp-area="" asp-controller="VarianteAttachment" asp-action="Download" asp-route-serverFileName="@varianteAttachment.FileName" asp-route-downloadName="@varianteAttachment.Title" asp-route-varianteId=@ViewBag.varianteId class="btn btn-link">
+                                        <i class="bi-download"></i>
+                                    </a>
+                                </td>
+                                <td class="sel-row">
+                                    @Html.DisplayFor(modelItem => varianteAttachment.DateAttached)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

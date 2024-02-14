@@ -1,0 +1,194 @@
+﻿@model PIPMUNI_ARG.Models.Domain.Contract
+@using PIPMUNI_ARG.Areas.Review.Models;
+@using PIPMUNI_ARG.Models.Domain;
+
+
+<section class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="row mb-5">
+                    <!--CONTRACT INFO-->
+                    <div class="info-table col-lg-6">
+                        <h4>Infomación general de la obra</h4>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Área Responsable
+                            </div>
+                            <div class="text-end col-md-6">
+                                @if (Model.Office_info != null)
+                                {
+                                    <span>@Model.Office_info.Name</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                ID Interno
+                            </div>
+                            <div class="text-end col-md-6">
+                                <span>@Model.Code</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Expediente
+                            </div>
+                            <div class="text-end col-md-6">
+                                <span>@Model.Record</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Sector
+                            </div>
+                            <div class="text-end col-md-6">
+                                @if (Model.Project_info?.Sector_info != null)
+                                {
+                                    <span>@Model.Project_info.Sector_info.Name</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Subsector
+                            </div>
+                            <div class="text-end col-md-6">
+                                @if (Model.Project_info?.Subsector_info != null)
+                                {
+                                    <span>@Model.Project_info.Subsector_info.Name</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Plazo original
+                            </div>
+                            <div class="text-end col-md-6">
+                                @Html.DisplayFor(model => model.PlazoOriginal)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Plazo vigente
+                            </div>
+                            <div class="text-end col-md-6">
+                                @ViewBag.revisedDuration
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Fecha de firma del contrato
+                            </div>
+                            <div class="text-end col-md-6">
+                                <span>@Html.DisplayFor(model => model.ContractDate)</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Fecha de acta de inicio
+                            </div>
+                            <div class="text-end col-md-6">
+                                <span>@Html.DisplayFor(model => model.StartDate)</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Fecha de fin prevista
+                            </div>
+                            <div class="text-end col-md-6">
+                                @ViewBag.revisedCompletionDate
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Fecha de Recepción
+                            </div>
+                            <div class="text-end col-md-6">
+                                @Html.DisplayFor(model => model.EndDate)
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                Contratista
+                            </div>
+                            <div class="text-end col-md-6">
+                                @if (Model.Contractor_info != null)
+                                {
+                                    <span>@Model.Contractor_info.Name</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-start col-md-6">
+                                CUIT Contratista
+                            </div>
+                            <div class="text-end col-md-6">
+                                @if (Model.Contractor_info != null)
+                                {
+                                    <span>@Model.Contractor_info.OfficialID</span>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                    <!--contract info-->
+
+                    <div class="col-lg-6">
+                        <!--CHARTS-->
+                        <div class="info-table">
+                            <div class="row ml-1 mt-5 mb-3">
+                                <H4 class="mb-0">Avance físico</H4>
+                                <div id="chartPhysical" style="width: 100%; height: 100px"></div>
+                            </div>
+                            <div class="row ml-1 mb-3">
+                                <H4 class="mb-0">Avance financiero</H4>
+                                <div id="chartFinance" style="width: 100%; height: 100px"></div>
+                            </div>
+                        </div>
+                        <!--charts-->
+                        <!--DATES-->
+                        <div class="mt-3">
+                            <div class="row ml-1">
+                                <div class="text-start fw-bold col-md-6">
+                                    Fecha Inicio Estimada
+                                </div>
+                                <div class="text-end fw-bold col-md-6">
+                                    Fecha Fin Estimada
+                                </div>
+                            </div>
+                        </div>
+                        <div class="info-table">
+                            <div class="row ml-1">
+                                <div class="text-left col-md-6">
+                                    <span>@ViewBag.startDate</span>
+                                </div>
+                                <div class="text-end col-md-6">
+                                    @ViewBag.revisedCompletionDate
+                                </div>
+                            </div>
+                        </div>
+                        <!--dates-->
+
+                    </div>
+                </div>
+
+                @if (Model?.Project > 0 && Model?.Project_info != null)
+                {
+                    <div class="row mb-5">
+                        <h4 class="d-inline">Proyecto</h4>
+                        <div class="col">
+                            <span class="ms-2">@Model?.Project_info?.Name</span>
+                            <a asp-route-id="@Model?.Project" asp-area="" asp-controller="Project" asp-action="Display" class="btn btn-link"><i class="bi bi-eye"></i></a>
+                        </div>
+                    </div>
+                }
+                <div class="row mb-5">
+                    <h4>Descripción</h4>
+                    <span>@Model?.Project_info?.Description</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

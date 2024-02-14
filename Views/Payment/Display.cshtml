@@ -1,0 +1,321 @@
+@using PIPMUNI_ARG.Models.Domain;
+@model PIPMUNI_ARG.Models.Domain.Payment
+@{
+    ViewData["Title"] = "Ver Certificado";
+    ViewBag.WorkingInContract = true;
+    ViewData["isBasicView"] = true;
+}
+
+
+
+<form asp-action="Display" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <input type="hidden" asp-for="Id" />
+    </div>
+    <div class="row">
+        <div class="form-group mb-3">
+            <label asp-for="Contract" class="control-label" title="Contrato al que hace referencia el certificado">Contrato</label>
+            <select disabled asp-for="Contract" class="form-select display" asp-items="ViewBag.listContract"></select>
+            <span asp-validation-for="Contract" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="Code" class="control-label" title="Código de Certificado asignado automáticamente por el sistema. Se usa para que los usuarios puedan buscar o identificar el certificado."></label>
+            <input disabled asp-for="Code" type="text" class="form-control">
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="Type" class="control-label" title="Tipo de Certificado">Tipo</label>
+            <select disabled asp-for="Type" class="form-select display" asp-items="ViewBag.listType"></select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="Number" class="control-label" title="Número de certificado"></label>
+            @Html.TextBoxFor(m => m.Number, "{0:d}", new { @class= "form-control", disabled="disabled"})
+            <span asp-validation-for="Number" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="ReportedMonth" class="control-label" title="Periodo (mes) de medición. Se toman el mes y el año de la fecha."></label>
+            <input disabled asp-for="ReportedMonth" type="date" class="form-control">
+            <span asp-validation-for="ReportedMonth" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="Value" class="control-label" title="El importe final a pagar del certificado."></label>
+            @Html.TextBoxFor(m => m.Value, "{0:n2}", new { @class= "form-control", disabled="disabled"})
+            <span asp-validation-for="Value" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="Diferencia" class="control-label" title="Diferencia Redeterminada"></label>
+            @Html.TextBoxFor(m => m.Diferencia, "{0:n2}", new { @class= "form-control", disabled="disabled"})
+            <span asp-validation-for="Diferencia" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="DescuentoFinanciero" class="control-label" title="Descuento Anticipo Financiero"></label>
+            @Html.TextBoxFor(m => m.DescuentoFinanciero, "{0:n2}", new { @class= "form-control", disabled="disabled"})
+            <span asp-validation-for="DescuentoFinanciero" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="DescuentoOtros" class="control-label" title="Otros Descuentos"></label>
+            @Html.TextBoxFor(m => m.DescuentoOtros, "{0:n2}", new { @class= "form-control", disabled="disabled"})
+            <span asp-validation-for="DescuentoOtros" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="PhysicalAdvance" class="control-label" title="El avance fisico que trae vinculado el certificado (un certificado de redeterminación no posee avance fisico)."></label>
+            @Html.TextBoxFor(m => m.PhysicalAdvance, "{0:n2}", new { @class= "form-control", disabled="disabled"})
+            <span asp-validation-for="PhysicalAdvance" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="Total" class="control-label" title="Importe final del certificado, calculado según el tipo de certificado."></label>
+            @Html.TextBoxFor(m => m.Total, "{0:n2}", new { @class= "form-control", disabled="disabled"})
+            <span asp-validation-for="Total" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="group-fields">
+        <div class="row">
+            <div class="form-group mb-3 col-sm-4">
+                <label asp-for="DateDelivery" class="control-label" title="Fecha del presentación del certificado"></label>
+                <input disabled asp-for="DateDelivery" type="date" class="form-control">
+                <span asp-validation-for="DateDelivery" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3 col-sm-4">
+                <label asp-for="DateApproved" class="control-label" title="Fecha en que el certificado fue aprobado o en que el valor correspondiente es devengado."></label>
+                <input disabled asp-for="DateApproved" type="date" class="form-control">
+                <span asp-validation-for="DateApproved" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3 col-sm-4">
+                <label asp-for="DatePayed" class="control-label" title="Fecha de pago del certificado."></label>
+                <input disabled asp-for="DatePayed" type="date" class="form-control">
+                <span asp-validation-for="DatePayed" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Record" class="control-label" title="Nº de expediente por la que se tramita el certificado"></label>
+            <input disabled asp-for="Record" type="text" class="form-control">
+            <span asp-validation-for="Record" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Stage" class="control-label" title="Iniciado-En área tecnica-En área contable-devengado- pagado.">Estado</label>
+            <select disabled asp-for="Stage" class="form-select display" asp-items="ViewBag.listStage"></select>
+            <span asp-validation-for="Stage" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divAttachmentMedicion">
+            <label asp-for="AttachmentMedicion" class="control-label" title="Arvchivo anexo que contiene el certificado de medición."></label>
+            <input hidden id="AttachmentMedicion" asp-for="AttachmentMedicion" type="text" class="form-control" placeholder="(sin archivo seleccionado)">
+            <div class="input-group mb-3">
+                @if (!string.IsNullOrEmpty(Model.AttachmentMedicion))
+                {
+                    <a class="btn btn-link" asp-area="" asp-controller="Payment" asp-action="Download" asp-route-serverFileName="@Model.AttachmentMedicion" asp-route-downloadName="Certificado" asp-route-contractId=@ViewBag.contractId>
+                        <i class="bi-download"></i>&nbsp; Descargar
+                    </a>
+                }
+            </div>
+            <span asp-validation-for="AttachmentMedicion" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divAttachmentOrden">
+            <label asp-for="AttachmentOrden" class="control-label" title="Archivo anexo que contiene la orden de pago."></label>
+            <input hidden id="AttachmentOrden" asp-for="AttachmentOrden" type="text" class="form-control" placeholder="(sin archivo seleccionado)">
+            <div class="input-group mb-3">
+                @if (!string.IsNullOrEmpty(Model.AttachmentOrden))
+                {
+                    <a class="btn btn-link" asp-area="" asp-controller="Payment" asp-action="Download" asp-route-serverFileName="@Model.AttachmentOrden" asp-route-downloadName="Orden de pago" asp-route-contractId=@ViewBag.contractId>
+                        <i class="bi-download"></i>&nbsp; Descargar
+                    </a>
+                }
+            </div>
+            <span asp-validation-for="AttachmentOrden" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+    <div class="mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+    </div>
+
+
+
+
+</form>
+<hr class="mb-5 mt-5" />
+<div class="row mb-5">
+    <div class="col-12 col-sm-12 col-lg-10 col-xl-8">
+        <div class="group-children">
+            <h4>Otros anexos</h4>
+
+            <!-- select table -->
+            <table class="table select-table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameForInnerType((PaymentAttachment s) => s.Title) <i class=@ViewBag.titleIcon></i>
+                        </th>
+                        <th>
+                            Descargar
+                        </th>
+                        <th>
+                            @Html.DisplayNameForInnerType((PaymentAttachment s) => s.DateAttached) <i class=@ViewBag.dateAttachedIcon></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.PaymentAttachments?.Count() > 0)
+                    {
+                        @foreach (var paymentAttachment in Model.PaymentAttachments)
+                        {
+                            <tr>
+                                <td class="sel-row">
+                                    @Html.DisplayFor(modelItem => paymentAttachment.Title)
+                                </td>
+                                <td class="sel-row">
+                                    <a asp-area="" asp-controller="PaymentAttachment" asp-action="Download" asp-route-serverFileName="@paymentAttachment.File" asp-route-downloadName="@paymentAttachment.Title" asp-route-paymentId=@ViewBag.paymentId class="btn btn-link">
+                                        <i class="bi-download"></i>
+                                    </a>
+                                </td>
+                                <td class="sel-row">
+                                    @Html.DisplayFor(modelItem => paymentAttachment.DateAttached)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<!-- Totals and Hide/Show fields for Type -->
+<script>
+$(function () {
+        //
+        var showHideValues = function (selectedType) {
+            switch (selectedType) {
+                case '1':// Anticipo
+                
+                    $('#divPhysicalAdvance').hide();
+                    $('#divPhysicalAdvance').val(null);
+                    $('#divReportedMonth').hide();
+                    $('#divReportedMonth').val(null);
+                    $('#divValue').show();
+                    $('#divDescuentoFinanciero').hide();
+                    $('#DescuentoFinanciero').val(null);
+                    $('#divDescuentoOtros').hide();
+                    $('#DescuentoOtros').val(null);
+                    $('#divDiferencia').hide();
+                    $('#Diferencia').val(null);
+                    break;
+                case '2': // Básico
+                    $('#divPhysicalAdvance').show();
+                    $('#divReportedMonth').show();
+                    $('#divValue').show();
+                    $('#divDescuentoFinanciero').show();
+                    $('#divDescuentoOtros').show();
+                    $('#divDiferencia').show();
+                    break;
+                case '3': // Redeterminado
+                    $('#divPhysicalAdvance').hide();
+                    $('#divPhysicalAdvance').val(null);
+                    $('#divReportedMonth').hide();
+                    $('#divReportedMonth').val(null);
+                    $('#divValue').hide();
+                    $('#Value').val(null);
+                    $('#divDescuentoFinanciero').hide();
+                    $('#DescuentoFinanciero').val(null);
+                    $('#divDescuentoOtros').hide();
+                    $('#DescuentoOtros').val(null);
+                    $('#divDiferencia').show();
+                    break;
+                case '4': // Ajuste Final
+                    $('#divPhysicalAdvance').show();
+                    $('#divReportedMonth').show();
+                    $('#divValue').show();
+                    $('#divDescuentoFinanciero').show();
+                    $('#divDescuentoOtros').show();
+                    $('#divDiferencia').hide();
+                    $('#Diferencia').val(null);
+                    break;
+                default:
+                    $('#divPhysicalAdvance').show();
+                    $('#divReportedMonth').show();
+                    $('#divValue').hide();
+                    $('#Value').val(null);
+                    $('#divDescuentoFinanciero').hide();
+                    $('#DescuentoFinanciero').val(null);
+                    $('#divDescuentoOtros').hide();
+                    $('#DescuentoOtros').val(null);
+                    $('#divDiferencia').hide();
+                    $('#Diferencia').val(null);
+                    break;
+            }
+        };
+
+        var calculateTotal = function () {
+            var sum = numberValue($('#Value'))
+                + numberValue($('#Diferencia'))
+                - numberValue($('#DescuentoFinanciero')) - numberValue($('#DescuentoOtros'));
+            if (!isNaN(sum))
+                $('#Total').val(sum.toLocaleString(defaultCulture,
+                { minimumFractionDigits: 2, maximumFractionDigits: 2, }));
+        };
+
+
+
+
+        //at view load
+        showHideValues($('#Type').val());
+        calculateTotal();
+
+        //on type change
+        $('#Type').change(function () {
+            showHideValues($(this).val());
+        });
+
+        $('input').change(function () {
+            calculateTotal();
+        });
+        $('select').change(function () {
+            calculateTotal();
+        });
+
+    });
+</script>
+

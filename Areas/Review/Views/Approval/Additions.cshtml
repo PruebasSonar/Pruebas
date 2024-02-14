@@ -1,0 +1,73 @@
+﻿@using PIPMUNI_ARG.Models.Domain;
+@model List<Addition>
+@{
+    Layout = "../Shared/_AprobacionLayout";
+    ViewBag.navAddition = "active";
+}
+
+
+
+
+
+
+@if (Model?.Count > 0)
+{
+    <h4 class="mb-4">Redeterminaciones pendientes de trámite</h4>
+
+    <table>
+        <thead>
+            <tr>
+                @if (User.IsInRole(ProjectGlobals.RoleDireccion))
+                {
+                    <th></th>
+                }
+                <th>@Html.DisplayNameForInnerType((Addition summary) => summary.Contract_info)</th>
+                <th>@Html.DisplayNameForInnerType((Addition summary) => summary.DateDelivery)</th>
+                <th class="numCel">@Html.DisplayNameForInnerType((Addition summary) => summary.Value)</th>
+                <th>@Html.DisplayNameForInnerType((Addition summary) => summary.Stage)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Addition addition in Model)
+            {
+                <tr>
+                    @if (User.IsInRole(ProjectGlobals.RoleDireccion))
+                    {
+                        <td title="modificar">
+                            <a asp-route-id="@addition.Id" asp-area="" asp-controller="Addition" asp-action="Edit" class="btn btn-clear"><i class="bi-pencil"></i></a>
+                        </td>
+                    }
+                    <td>
+                        @if (addition.Contract_info?.Id > 0)
+                        {
+                            @addition.Contract_info?.Name
+                        }
+                    </td>
+                    <td>
+                        @if (addition.DateDelivery != DateTime.MinValue)
+                        {
+                            @addition.DateDelivery?.ToString("yyyy-MMM-dd")
+                        }
+                    </td>
+                    <td class="numCel">
+                        @if (addition.Value > 0)
+                        {
+                            @addition.Value?.ToString("n0")
+                        }
+                    </td>
+                    <td>
+                        @if (addition.Stage_info != null)
+                        {
+                            <label>@addition.Stage_info.Name</label>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No se encuentran Redeterminaciones pendientes de trámite.</p>
+}

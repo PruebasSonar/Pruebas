@@ -1,0 +1,149 @@
+@using PIPMUNI_ARG.Models.Domain;
+@model ProjectImage
+@{
+    ViewData["Title"] = "Editar Imagen";
+    ViewData["isBasicView"] = true;
+}
+
+@await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+<form id="FormProjectImage" asp-action="Edit" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl"enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <input type="hidden" asp-for="Id" />
+    </div>
+    <div class="row">
+        <div class="form-group mb-3" id="divProject">
+            <label asp-for="Project" class="control-label" title="Proyecto al que corresponde la imagen."></label>
+            @if (((int?)@ViewBag.projectId) != null && ((int?)@ViewBag.projectId).Value > 0)
+            {
+                @Html.HiddenFor(m => m.Project)
+                <select disabled asp-for="Project" name="Project" class="form-select" asp-items="ViewBag.listProject" id="Project"></select>
+            }
+            else
+            {
+                <select asp-for="Project" name="Project" class="form-select" asp-items="ViewBag.listProject" id="Project"></select>
+            }
+            <span asp-validation-for="Project" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3" id="divFile">
+            <label asp-for="File" class="control-label" title="Nombre del archivo que contiene la imagen."></label>
+            @if (string.IsNullOrEmpty(Model.File))
+            {
+                <input hidden id="FileInput" asp-for="FileInput" type="file" />
+                <div class="input-group mb-3">
+                    <label id="FileButton" asp-for="FileInput" class="btn btn-outline-secondary" type="button"><i class="bi bi-upload"></i>&nbsp; Cargar Archivo</label>
+                    <input readonly id="File" asp-for="File" type="text" class="form-control" placeholder="(sin archivo seleccionado)">
+                </div>
+            }
+            else
+            {
+                <input hidden id="File" asp-for="File" type="text" class="form-control" placeholder="(sin archivo seleccionado)">
+                <div class="input-group mb-3">
+                    <a class="btn btn-link" asp-area="" asp-controller="ProjectImage" asp-action="Download" asp-route-serverFileName="@Model.File" asp-route-downloadName="Archivo" asp-route-projectId=@ViewBag.projectId>
+                        <i class="bi-download"></i>&nbsp; Descargar
+                    </a>
+                </div>
+            }
+            <span asp-validation-for="File" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3" id="divDescription">
+            <label asp-for="Description" class="control-label" title="Descripción de la imagen."></label>
+            <textarea asp-for="Description" type="text" rows="5" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divImageDate">
+            <label asp-for="ImageDate" class="control-label" title="Fecha en la que produjo la imagen."></label>
+            <input asp-for="ImageDate" type="date" class="form-control">
+            <span asp-validation-for="ImageDate" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divUploadDate">
+            <label asp-for="UploadDate" class="control-label" title="Fecha en que se registra la imagen en el sistema."></label>
+            <input asp-for="UploadDate" type="date" class="form-control" readonly>
+            <span asp-validation-for="UploadDate" class="text-danger"></span>
+        </div>
+    </div>
+
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+
+    <div class="mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteConfirmation"><i class="bi bi-x-lg"></i>&nbsp; Borrar</button>
+        <button type="submit"  class="btn btn-primary"><i class="bi bi-check-lg"></i>&nbsp; Guardar</button>
+    </div>
+
+
+
+    @* Confirm before deleting *@
+    <div class="modal fade" id="deleteConfirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Advertencia de Borrado</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Está a punto de eliminar la información de Imagen..</p>
+                    Confirme si desea continuar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Conservar</button>
+                    <button type="submit" formnovalidate class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.Id" asp-route-returnUrl="@ViewBag.returnUrl">Borrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<!-- Attachments Manager -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // File: set elements in variables;
+        const fileInput = document.getElementById('FileInput');
+        const fileName = document.getElementById('File');
+        const fileButton = document.getElementById('FileButton');
+
+
+        // File: display file name when selected;
+        if (fileInput != null)
+            fileInput.addEventListener('change', function () {
+                fileName.value = fileInput.files[0].name;
+                fileButton.textContent = (fileName.textContent != null) ? "Cambiar Archivo" :  "Cargar Archivo";
+            });
+
+    });
+</script>

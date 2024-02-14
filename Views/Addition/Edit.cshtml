@@ -1,0 +1,223 @@
+@using PIPMUNI_ARG.Models.Domain;
+@model Addition
+@{
+    ViewData["Title"] = "Editar Redeterminación";
+    ViewBag.WorkingInContract = true;
+    ViewData["isBasicView"] = true;
+}
+
+@await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+<form id="FormAddition" asp-action="Edit" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl"enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <input type="hidden" asp-for="Id" />
+    </div>
+    <div class="row">
+        @Html.HiddenFor(m => m.Contract)
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4" id="divCode">
+            <label asp-for="Code" class="control-label" title="Código de la Redeterminación asignado automáticamente por el sistema. Se usa para que los usuarios puedan buscar o identificar la redeterminación."></label>
+            <input asp-for="Code" type="text" class="form-control" readonly>
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divPeriodoSalto">
+            <label asp-for="PeriodoSalto" class="control-label" title="Periodo de Salto"></label>
+            <input asp-for="PeriodoSalto" type="text" class="form-control monthDate" value=@(Model.PeriodoSalto != null && Model.PeriodoSalto != DateTime.MinValue ? Model.PeriodoSalto.Value.ToString("MM/yyyy") : null)>
+            <span asp-validation-for="PeriodoSalto" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divValue">
+            <label asp-for="Value" class="control-label" title="Monto de la redeterminación."></label>
+            @Html.TextBoxFor(m => m.Value, "{0:n2}", new { @class= "form-control", @onchange="formatNumber(this,2);"})
+            <span class="text-danger">@ViewBag.ValueValidationMsg</span>
+        </div>
+    </div>
+    <div class="group-fields">
+        <div class="row">
+            <div class="form-group mb-3 col-sm-6" id="divDateDelivery">
+                <label asp-for="DateDelivery" class="control-label" title="Fecha en la que se presento el certificado."></label>
+                <input asp-for="DateDelivery" type="date" class="form-control">
+                <span asp-validation-for="DateDelivery" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3 col-sm-6" id="divDateApproved">
+                <label asp-for="DateApproved" class="control-label" title="Fecha de aprobación de la redeterminación"></label>
+                <input asp-for="DateApproved" type="date" class="form-control">
+                <span asp-validation-for="DateApproved" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divRecord">
+            <label asp-for="Record" class="control-label" title="Nº de expediente por la que se tramita la redeterminación"></label>
+            <input asp-for="Record" type="text" class="form-control">
+            <span asp-validation-for="Record" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divStage">
+            <label asp-for="Stage" class="control-label" title="A INICIAR-EN PROCESO-APROBADA."></label>
+            <select asp-for="Stage" name="Stage" class="form-select" asp-items="ViewBag.listStage" id="Stage"></select>
+            <span asp-validation-for="Stage" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divAttachment">
+            <label asp-for="Attachment" class="control-label" title="Archivo adjunto que contiene el convenio o el acta de la redeterminación."></label>
+            @if (string.IsNullOrEmpty(Model.Attachment))
+            {
+                <input hidden id="AttachmentInput" asp-for="AttachmentInput" type="file" />
+                <div class="input-group mb-3">
+                    <label id="AttachmentButton" asp-for="AttachmentInput" class="btn btn-outline-secondary" type="button"><i class="bi bi-upload"></i>&nbsp; Cargar Archivo</label>
+                    <input readonly id="Attachment" asp-for="Attachment" type="text" class="form-control" placeholder="(sin archivo seleccionado)">
+                </div>
+            }
+            else
+            {
+                <input hidden id="Attachment" asp-for="Attachment" type="text" class="form-control" placeholder="(sin archivo seleccionado)">
+                <div class="input-group mb-3">
+                    <a class="btn btn-link" asp-area="" asp-controller="Addition" asp-action="Download" asp-route-serverFileName="@Model.Attachment" asp-route-downloadName="Acto de aprobación" asp-route-contractId=@ViewBag.contractId>
+                        <i class="bi-download"></i>&nbsp; Descargar
+                    </a>
+                </div>
+            }
+            <span asp-validation-for="Attachment" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+
+    <div class="mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteConfirmation"><i class="bi bi-x-lg"></i>&nbsp; Borrar</button>
+        <button type="submit" formnovalidate class="btn btn-primary"><i class="bi bi-check-lg"></i>&nbsp; Guardar</button>
+    </div>
+
+
+
+    @* Confirm before deleting *@
+    <div class="modal fade" id="deleteConfirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Advertencia de Borrado</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Está a punto de eliminar la información de Redeterminación..</p>
+                    Confirme si desea continuar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Conservar</button>
+                    <button type="submit" formnovalidate class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.Id" asp-route-returnUrl="@ViewBag.returnUrl">Borrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+<hr class="mb-5 mt-5" />
+<div class="row mb-5">
+    <div class="col-12 col-sm-12 col-lg-10 col-xl-8">
+        <div class="group-children">
+            <h4>Otros anexos</h4>
+            <a asp-area="" asp-controller="AdditionAttachment"  asp-action="Create" asp-route-additionId=@ViewBag.additionId class="btn btn-clear float-end" asp-route-bufferedUrl=@ViewBag.returnUrl><i class="bi-plus"></i> Crear  Anexo Redeterminación</a>
+
+            <!-- select table -->
+            <table class="table select-table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameForInnerType((AdditionAttachment s) => s.Title) <i class=@ViewBag.titleIcon></i>
+                        </th>
+                        <th>
+                            Descargar
+                        </th>
+                        <th>
+                            @Html.DisplayNameForInnerType((AdditionAttachment s) => s.DateAttached) <i class=@ViewBag.dateAttachedIcon></i>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AdditionAttachments?.Count() > 0)
+                    {
+                        @foreach (var additionAttachment in Model.AdditionAttachments)
+                        {
+                            <tr>
+                                <td class="sel-row">
+                                    @Html.DisplayFor(modelItem => additionAttachment.Title)
+                                </td>
+                                <td class="sel-row">
+                                    <a asp-area="" asp-controller="AdditionAttachment" asp-action="Download" asp-route-serverFileName="@additionAttachment.FileName" asp-route-downloadName="@additionAttachment.Title" asp-route-additionId=@ViewBag.additionId class="btn btn-link">
+                                        <i class="bi-download"></i>
+                                    </a>
+                                </td>
+                                <td class="sel-row">
+                                    @Html.DisplayFor(modelItem => additionAttachment.DateAttached)
+                                </td>
+                                <td class="sel-row">
+                                    <a asp-area="" asp-controller="AdditionAttachment" asp-action="Edit" asp-route-id="@additionAttachment.Id" asp-route-additionId=@ViewBag.additionId asp-route-bufferedUrl=@ViewBag.returnUrl class="btn nav-link">
+                                        <i class="bi-pencil"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<!-- month/Year date selector -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js"></script>
+<!-- Attachments Manager -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Attachment: set elements in variables;
+        const attachmentInput = document.getElementById('AttachmentInput');
+        const attachmentName = document.getElementById('Attachment');
+        const attachmentButton = document.getElementById('AttachmentButton');
+
+
+        // Attachment: display file name when selected;
+        if (attachmentInput != null)
+            attachmentInput.addEventListener('change', function () {
+                attachmentName.value = attachmentInput.files[0].name;
+                attachmentButton.textContent = (attachmentName.textContent != null) ? "Cambiar Archivo" :  "Cargar Archivo";
+            });
+
+    });
+</script>

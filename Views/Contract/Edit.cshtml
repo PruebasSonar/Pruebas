@@ -1,0 +1,206 @@
+@using PIPMUNI_ARG.Models.Domain;
+@model Contract
+@{
+    ViewData["Title"] = "Editar Obra";
+    ViewData["isBasicView"] = true;
+}
+
+@await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+<form id="FormContract" asp-action="Edit" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <input type="hidden" asp-for="Id" />
+    </div>
+    <div class="row">
+        <div class="form-group mb-3" id="divProject">
+            <label asp-for="Project" class="control-label" title="Proyecto al que corresponde la obra."></label>
+            <select asp-for="Project" name="Project" class="searchableSelect" style="height: 3em !important;" asp-items="ViewBag.listProject" id="Project"></select>
+            <span asp-validation-for="Project" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4" id="divCode">
+            <label asp-for="Code" class="control-label" title="Código de obra asignado automáticamente por el sistema. Se usa para que los usuarios puedan buscar o identificar la obra."></label>
+            <input asp-for="Code" type="text" class="form-control" readonly>
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3" id="divName">
+            <label asp-for="Name" class="control-label" title="Nombre o título que permite identificar y conocer el concepto de la obra."></label>
+            <input asp-for="Name" type="text" class="form-control">
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divStage">
+            <label asp-for="Stage" class="control-label" title="A INICIAR-EN EJECUCION-RESCINDIDA-FINALIZADA"></label>
+            <select asp-for="Stage" name="Stage" class="form-select" asp-items="ViewBag.listStage" id="Stage"></select>
+            <span asp-validation-for="Stage" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divOffice">
+            <label asp-for="Office" class="control-label" title="Secretaría responsable de la obra"></label>
+            <select asp-for="Office" name="Office" class="form-select" asp-items="ViewBag.listOffice" id="Office"></select>
+            <span asp-validation-for="Office" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divOriginalValue">
+            <label asp-for="OriginalValue" class="control-label" title="El monto al que se firmo el contrato"></label>
+            @Html.TextBoxFor(m => m.OriginalValue, "{0:n2}", new { @class= "form-control", @onchange="formatNumber(this,2);"})
+            <span class="text-danger">@ViewBag.OriginalValueValidationMsg</span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divPlazoOriginal">
+            <label asp-for="PlazoOriginal" class="control-label" title="Plazo original de ejecución del contrato. (núero de meses)"></label>
+            @Html.TextBoxFor(m => m.PlazoOriginal, "{0:d}", new { @class= "form-control"})
+            <span asp-validation-for="PlazoOriginal" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="group-fields">
+        <div class="row">
+            <div class="form-group mb-3 col-sm-6" id="divPlannedStartDate">
+                <label asp-for="PlannedStartDate" class="control-label" title="Fecha estimada de inicio de la obra."></label>
+                <input asp-for="PlannedStartDate" type="date" class="form-control">
+                <span asp-validation-for="PlannedStartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3 col-sm-6" id="divPlannedEndDate">
+                <label asp-for="PlannedEndDate" class="control-label" title="La fecha en la que la obra se estima que finaliza (más allá del plazo real que da la fecha de fin prevista)."></label>
+                <input asp-for="PlannedEndDate" type="date" class="form-control">
+                <span asp-validation-for="PlannedEndDate" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4" id="divType">
+            <label asp-for="Type" class="control-label" title="Modalidad de ejecución que aplica para el contrato (Por Administración o Por Contratación)."></label>
+            <select asp-for="Type" name="Type" class="form-select" asp-items="ViewBag.listType" id="Type"></select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="group-fields alterna">
+        <div class="row">
+            <div class="form-group mb-3" id="divContractor">
+                <label asp-for="Contractor" class="control-label" title="Contratista"></label>
+                <select asp-for="Contractor" name="Contractor" class="searchableSelect" asp-items="ViewBag.listContractor" id="Contractor"></select>
+                <span asp-validation-for="Contractor" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group mb-3 col-sm-4" id="divContractDate">
+                <label asp-for="ContractDate" class="control-label" title="La fecha en que se firmo el contrato con la compañía."></label>
+                <input asp-for="ContractDate" type="date" class="form-control">
+                <span asp-validation-for="ContractDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3 col-sm-4" id="divStartDate">
+                <label asp-for="StartDate" class="control-label" title="La fecha en que se empezo la obra."></label>
+                <input asp-for="StartDate" type="date" class="form-control">
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3 col-sm-4" id="divEndDate">
+                <label asp-for="EndDate" class="control-label" title="La fecha en que realmente se termino la obra (es un acto administrativo)."></label>
+                <input asp-for="EndDate" type="date" class="form-control">
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3" id="divRecord">
+            <label asp-for="Record" class="control-label" title="Número del expediente de la obra."></label>
+            <input asp-for="Record" type="text" class="form-control">
+            <span asp-validation-for="Record" class="text-danger"></span>
+        </div>
+    </div>
+
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+
+    <div class="mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteConfirmation"><i class="bi bi-x-lg"></i>&nbsp; Borrar</button>
+        <button type="submit" formnovalidate class="btn btn-primary"><i class="bi bi-check-lg"></i>&nbsp; Guardar</button>
+    </div>
+
+
+
+    @* Confirm before deleting *@
+    <div class="modal fade" id="deleteConfirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Advertencia de Borrado</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Está a punto de eliminar la información de Obra..</p>
+                    Confirme si desea continuar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Conservar</button>
+                    <button type="submit" formnovalidate class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.Id" asp-route-returnUrl="@ViewBag.returnUrl">Borrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+<!-- Show/Hide Contractor -->
+<script>
+$(function () {
+        //
+        var showHideValues = function (selectedType) {
+            switch (selectedType) {
+                case '2': // Por Contratación
+                    $('#divContractor').show();
+                    $('#divContractDate').show();
+                    break;
+                default:
+                    $('#divContractor').hide();
+                    $('#Contractor').val(null);               
+                    $('#divContractDate').hide();
+                    $('#ContractDate').val(null);
+                    break;
+            }
+        };
+
+
+        //at view load
+        showHideValues($('#Type').val());
+
+        //on type change
+        $('#Type').change(function () {
+            showHideValues($(this).val());
+        });
+
+
+    });
+</script>
+

@@ -1,0 +1,72 @@
+@using PIPMUNI_ARG.Models.Domain;
+@model ProjectSource
+@{
+    ViewData["Title"] = "Crear Fuente Financiamiento";
+    ViewData["isBasicView"] = true;
+}
+
+@await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+
+<form id="FormProjectSource" asp-action="Create" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <div class="form-group mb-3" id="divProject">
+            <label asp-for="Project" class="control-label" title="Proyecto al que corresponde la fuente de financiamiento."></label>
+            @if (((int?)@ViewBag.projectId) != null && ((int?)@ViewBag.projectId).Value > 0)
+            {
+                @Html.HiddenFor(m => m.Project)
+                <select disabled asp-for="Project" name="Project" class="form-select" asp-items="ViewBag.listProject" id="Project"></select>
+            }
+            else
+            {
+                <select asp-for="Project" name="Project" class="form-select" asp-items="ViewBag.listProject" id="Project"></select>
+            }
+            <span asp-validation-for="Project" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divSource">
+            <label asp-for="Source" class="control-label" title="Organísmo o entidad que financia el proyecto."></label>
+            <select asp-for="Source" name="Source" class="form-select" asp-items="ViewBag.listSource" id="Source"></select>
+            <span asp-validation-for="Source" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divPercentage">
+            <label asp-for="Percentage" class="control-label" title="Porcentaje del proyecto financiado por la fuente."></label>
+            @Html.TextBoxFor(m => m.Percentage, "{0:n2}", new { @class= "form-control", @onchange="formatNumber(this,2);"})
+            <span class="text-danger">@ViewBag.PercentageValidationMsg</span>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+
+    <div class="form-group mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+        <button type="submit" formnovalidate class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar</button>
+    </div>
+
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

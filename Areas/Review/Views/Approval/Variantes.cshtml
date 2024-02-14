@@ -1,0 +1,69 @@
+﻿@using PIPMUNI_ARG.Models.Domain;
+@model List<Variante>
+@{
+    Layout = "../Shared/_AprobacionLayout";
+    ViewBag.navVariante = "active";
+}
+
+
+@if (Model?.Count > 0)
+{
+    <h4 class="mb-4">Variantes pendientes de trámite</h4>
+
+    <table>
+        <thead>
+            <tr>
+                @if (User.IsInRole(ProjectGlobals.RoleDireccion))
+                {
+                    <th></th>
+                }
+                <th>@Html.DisplayNameForInnerType((Variante summary) => summary.Contract_info)</th>
+                <th>@Html.DisplayNameForInnerType((Variante summary) => summary.DateDelivery)</th>
+                <th class="numCel">@Html.DisplayNameForInnerType((Variante summary) => summary.Value)</th>
+                <th>@Html.DisplayNameForInnerType((Variante summary) => summary.Stage)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (Variante variante in Model)
+            {
+                <tr>
+                    @if (User.IsInRole(ProjectGlobals.RoleDireccion))
+                    {
+                        <td title="modificar">
+                            <a asp-route-id="@variante.Id" asp-area="" asp-controller="Variante" asp-action="Edit" class="btn btn-clear"><i class="bi-pencil"></i></a>
+                        </td>
+                    }
+                    <td>
+                        @if (variante.Contract_info?.Id > 0)
+                        {
+                            @variante.Contract_info?.Name
+                        }
+                    </td>
+                    <td>
+                        @if (variante.DateDelivery != DateTime.MinValue)
+                        {
+                            @variante.DateDelivery?.ToString("yyyy-MMM-dd")
+                        }
+                    </td>
+                    <td class="numCel">
+                        @if (variante.Value > 0)
+                        {
+                            @variante.Value?.ToString("n0")
+                        }
+                    </td>
+                    <td>
+                        @if (variante.Stage_info != null)
+                        {
+                            <label>@variante.Stage_info.Name</label>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No se encuentran Variantes pendientes de trámite.</p>
+}

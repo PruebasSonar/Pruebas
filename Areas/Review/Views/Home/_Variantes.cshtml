@@ -1,0 +1,229 @@
+﻿@using PIPMUNI_ARG.Models.Domain;
+@using PIPMUNI_ARG.Models.Reports;
+
+<section class="section bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <form>
+
+                    <!--===================-->
+                    <!--Variantes-->
+                    <div class="wrap-documents mb-5">
+                        <div class="row align-items-center">
+                            <div class="col-lg-8"><h4>Variantes</h4></div>
+                            <div class="col-lg-4">
+                                @if (User.IsInRole(ProjectGlobals.RoleAdmin)
+                                || User.IsInRole(ProjectGlobals.RoleDireccion)
+                                || User.IsInRole(ProjectGlobals.RoleOperacion))
+                                {
+                                    <div class="mb-2">
+                                        <a asp-area="" asp-controller="Variante" asp-action="Create" asp-route-contractId="@Model.Id" class="btn btn-clear">
+                                            <span><i class="bi-plus"></i> Crear @Html.DisplayNameForInnerType((Variante p) => p)</span>
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+
+                        <!--TOTALS -->
+                        @{
+                            PaymentTotalsModel summary = ViewBag.varianteTotals;
+                        }
+                        <div class="row">
+                            <div class="summUp">
+                                <div class="card-list">
+                                    <div class="card">
+                                        <div class="wrap-item-list">
+                                            <span class="label-dato">Cantidad total</span>
+                                            <span class="label-number">
+                                                @if (summary.totalQty.HasValue)
+                                                {
+                                                    @summary.totalQty.Value.ToString("n0")
+                                                }
+                                            </span>
+                                        </div>
+                                        <div class="wrap-item-list">
+                                            <span class="label-dato">Monto total</span>
+                                            <span class="label-number">
+                                                @if (summary.totalValue.HasValue)
+                                                {
+                                                    @summary.totalValue.Value.ToString("c0")
+                                                }
+                                            </span>
+                                        </div>
+
+                                        <div class="wrap-item-list">
+                                            <span class="label-dato">En curso</span>
+                                            <span class="label-number">
+                                                @if (summary.requestedQty.HasValue)
+                                                {
+                                                    @summary.requestedQty.Value.ToString("n0")
+                                                }
+                                            </span>
+                                        </div>
+                                        <div class="wrap-item-list">
+                                            <span class="label-dato">Monto en curso</span>
+                                            <span class="label-number">
+                                                @if (summary.requestedValue.HasValue)
+                                                {
+                                                    @summary.requestedValue.Value.ToString("c0")
+                                                }
+                                            </span>
+                                        </div>
+
+                                        <div class="wrap-item-list">
+                                            <span class="label-dato">Aprobadas</span>
+                                            <span class="label-number">
+                                                @if (summary.approvedQty.HasValue)
+                                                {
+                                                    @summary.approvedQty.Value.ToString("n0")
+                                                }
+                                            </span>
+                                        </div>
+                                        <div class="wrap-item-list">
+                                            <span class="label-dato">Monto aprobadas</span>
+                                            <span class="label-number">
+                                                @if (summary.approvedValue.HasValue)
+                                                {
+                                                    @summary.approvedValue.Value.ToString("c0")
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--totals -->
+                        @if (Model?.Variantes?.Count > 0)
+                        {
+                            <div class="accordion" id="accordionVariante">
+
+                                <div class="table-responsive">
+                                    <table class="custom-table">
+                                        <thead>
+                                            <tr>
+                                                <th class="numCel">#</th>
+                                                <th class="dateCel">@Html.DisplayNameForInnerType((Variante p) => p.DateDelivery)</th>
+                                                <th>@Html.DisplayNameForInnerType((Variante p) => p.Motivo)</th>
+                                                <th>@Html.DisplayNameForInnerType((Variante p) => p.Stage)</th>
+                                                <th class="numCel">@Html.DisplayNameForInnerType((Variante p) => p.Value)</th>
+                                                <th></th>
+                                                @if (User.IsInRole(ProjectGlobals.RoleDireccion))
+                                                {
+                                                    <th></th>
+                                                }
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (Variante variante in Model.Variantes)
+                                            {
+                                                <tr>
+                                                    <td class="numCel">
+                                                        @variante.Code
+                                                    </td>
+                                                    <td class="dateCel">
+                                                        @variante.DateDelivery?.ToString("yyyy-MM-dd")
+                                                    </td>
+                                                    <td>
+                                                        @if (variante.Motivo_info != null)
+                                                        {
+                                                            <label>@variante.Motivo_info.Name</label>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (variante.Stage_info != null)
+                                                        {
+                                                            <label>@variante.Stage_info.Name</label>
+                                                        }
+                                                    </td>
+                                                    <td class="numCel">
+                                                        @variante.Value?.ToString("n0")
+                                                    </td>
+                                                    @*                                                    <td>
+                                            <span>
+                                            <span class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target=@("#collapseVariante" + @variante.Id) aria-expanded="false" aria-controls=@("collapseVariante" + @variante.Id)>
+                                            @if (variante.VarianteAttachments?.Count > 0)
+                                            {
+                                            <span>con anexos</span>
+                                            }
+                                            else
+                                            {
+                                            <span>sin anexos</span>
+                                            }
+                                            </span>
+                                            </span>
+                                            </td>
+                                            *@
+                                                    @if ((variante.Stage != 3) && (User.IsInRole(ProjectGlobals.RoleDireccion) || User.IsInRole(ProjectGlobals.RoleAdmin)))
+                                                    {
+                                                        <td title="modificar">
+                                                            <a asp-route-id="@variante.Id" asp-area="" asp-controller="Variante" asp-action="Edit" class="btn btn-link"><i class="bi-pencil"></i></a>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td title="ver">
+                                                            <a asp-route-id="@variante.Id" asp-area="" asp-controller="Variante" asp-action="Display" class="btn btn-link"><i class="bi-eye"></i></a>
+                                                        </td>
+                                                    }
+
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+
+                                    <!-- Attachments -->
+                                    <div class="col-xl-7 col-lg-9 col-md-11">
+                                        @foreach (Variante variante in Model.Variantes)
+                                        {
+                                            <div class="accordion-item bg-filled">
+                                                <div id=@("collapseVariante" + @variante.Id) class="accordion-collapse collapse" aria-labelledby=@("heading" + @variante.Id) data-bs-parent="#accordionVariante">
+                                                    <div class="accordion-body">
+                                                        <div class="container">
+                                                            <h6 class="mb-2">Anexos @Html.DisplayNameForInnerType((Variante p) => p) # @variante.Id.ToString("n0")</h6>
+                                                            @if (variante.VarianteAttachments?.Count > 0)
+                                                            {
+                                                                @foreach (VarianteAttachment varianteAttachment in variante.VarianteAttachments)
+                                                                {
+                                                                    <div class="row">
+                                                                        <div class="col-8"><span>@varianteAttachment.Title</span></div>
+                                                                        <div class="col-4">
+                                                                            <a class="btn btn-link" asp-area="" asp-controller="VarianteAttachment" asp-action="Download" asp-route-serverFileName="@varianteAttachment.FileName" asp-route-downloadName="@varianteAttachment.Title" asp-route-varianteId=@ViewBag.varianteId>
+                                                                                <i class="bi-download"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            }
+                                                            @if (User.IsInRole(ProjectGlobals.RoleAdmin)
+                                                           || User.IsInRole(ProjectGlobals.RoleDireccion)
+                                                           || User.IsInRole(ProjectGlobals.RoleOperacion))
+                                                            {
+                                                                <a asp-route-varianteId=@variante.Id asp-area="" asp-controller="VarianteAttachment" asp-action="Create" asp-route-varianteId=@ViewBag.varianteId class="btn btn-link float-end">
+                                                                    <span><i class="bi-plus"></i> Cargar Anexo Variante</span>
+                                                                </a>
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                        }
+                    </div>
+
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,128 @@
+@using PIPMUNI_ARG.Models.Domain;
+@model Addition
+@{
+    ViewData["Title"] = "Crear Redeterminación";
+    ViewBag.WorkingInContract = true;
+    ViewData["isBasicView"] = true;
+}
+
+@await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+
+<form id="FormAddition" asp-action="Create" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl"enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        @Html.HiddenFor(m => m.Contract)
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4" id="divCode">
+            <label asp-for="Code" class="control-label" title="Código de la Redeterminación asignado automáticamente por el sistema. Se usa para que los usuarios puedan buscar o identificar la redeterminación."></label>
+            <input asp-for="Code" type="text" class="form-control" readonly>
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divPeriodoSalto">
+            <label asp-for="PeriodoSalto" class="control-label" title="Periodo de Salto"></label>
+            <input asp-for="PeriodoSalto" type="text" class="form-control monthDate" value=@(Model.PeriodoSalto != null && Model.PeriodoSalto != DateTime.MinValue ? Model.PeriodoSalto.Value.ToString("MM/yyyy") : null)>
+            <span asp-validation-for="PeriodoSalto" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divValue">
+            <label asp-for="Value" class="control-label" title="Monto de la redeterminación."></label>
+            @Html.TextBoxFor(m => m.Value, "{0:n2}", new { @class= "form-control", @onchange="formatNumber(this,2);"})
+            <span class="text-danger">@ViewBag.ValueValidationMsg</span>
+        </div>
+    </div>
+    <div class="group-fields">
+        <div class="row">
+            <div class="form-group mb-3 col-sm-6" id="divDateDelivery">
+                <label asp-for="DateDelivery" class="control-label" title="Fecha en la que se presento el certificado."></label>
+                <input asp-for="DateDelivery" type="date" class="form-control">
+                <span asp-validation-for="DateDelivery" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3 col-sm-6" id="divDateApproved">
+                <label asp-for="DateApproved" class="control-label" title="Fecha de aprobación de la redeterminación"></label>
+                <input asp-for="DateApproved" type="date" class="form-control">
+                <span asp-validation-for="DateApproved" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divRecord">
+            <label asp-for="Record" class="control-label" title="Nº de expediente por la que se tramita la redeterminación"></label>
+            <input asp-for="Record" type="text" class="form-control">
+            <span asp-validation-for="Record" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6" id="divStage">
+            <label asp-for="Stage" class="control-label" title="A INICIAR-EN PROCESO-APROBADA."></label>
+            <select asp-for="Stage" name="Stage" class="form-select" asp-items="ViewBag.listStage" id="Stage"></select>
+            <span asp-validation-for="Stage" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6" id="divAttachment">
+            <label asp-for="Attachment" class="control-label" title="Archivo adjunto que contiene el convenio o el acta de la redeterminación."></label>
+            <input hidden id="AttachmentInput" asp-for="AttachmentInput" type="file" />
+            <div class="input-group mb-3">
+                <label id="AttachmentButton" asp-for="AttachmentInput" class="btn btn-outline-secondary" type="button"><i class="bi bi-upload"></i>&nbsp; Cargar Archivo</label>
+                <input readonly id="Attachment" asp-for="Attachment" type="text" class="form-control" placeholder="(sin archivo seleccionado)">
+            </div>
+            <span asp-validation-for="Attachment" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+
+    <div class="form-group mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+        <button type="submit" formnovalidate class="btn btn-primary"><i class="bi bi-check-lg"></i> Guardar</button>
+    </div>
+
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<!-- month/Year date selector -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.es.min.js"></script>
+<!-- Attachments Manager -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Attachment: set elements in variables;
+        const attachmentInput = document.getElementById('AttachmentInput');
+        const attachmentName = document.getElementById('Attachment');
+        const attachmentButton = document.getElementById('AttachmentButton');
+
+
+        // Attachment: display file name when selected;
+        if (attachmentInput != null)
+            attachmentInput.addEventListener('change', function () {
+                attachmentName.value = attachmentInput.files[0].name;
+                attachmentButton.textContent = (attachmentName.textContent != null) ? "Cambiar Archivo" :  "Cargar Archivo";
+            });
+
+    });
+</script>

@@ -1,0 +1,232 @@
+@using PIPMUNI_ARG.Models.Domain;
+@model PIPMUNI_ARG.Models.Domain.Project
+@{
+    ViewData["Title"] = "Ver Proyecto";
+    ViewData["isBasicView"] = true;
+}
+
+
+
+<form asp-action="Display" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <input type="hidden" asp-for="Id" />
+    </div>
+    <div class="row">
+        <div class="form-group mb-3">
+            <label asp-for="Name" class="control-label" title="Nombre del proyecto"></label>
+            <input disabled asp-for="Name" type="text" class="form-control">
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-4">
+            <label asp-for="Code" class="control-label" title="Código que identifica al proyecto"></label>
+            <input disabled asp-for="Code" type="text" class="form-control">
+            <span asp-validation-for="Code" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Sector" class="control-label" title="Principal sector al que aporta la ejecución del proyecto.">Sector</label>
+            <select disabled asp-for="Sector" class="form-select display" asp-items="ViewBag.listSector"></select>
+            <span asp-validation-for="Sector" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Subsector" class="control-label" title="Subsector dentro del cual se desarrolla la obra.">Subsector</label>
+            <select disabled asp-for="Subsector" class="form-select display" asp-items="ViewBag.listSubsector"></select>
+            <span asp-validation-for="Subsector" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Stage" class="control-label" title="Estado en que se encuentra el proyecto.">Etapa</label>
+            <select disabled asp-for="Stage" class="form-select display" asp-items="ViewBag.listStage"></select>
+            <span asp-validation-for="Stage" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Office" class="control-label" title="Organismo o área de la administración municipal responsable del proyecto.">Área responsable proyecto</label>
+            <select disabled asp-for="Office" class="form-select display" asp-items="ViewBag.listOffice"></select>
+            <span asp-validation-for="Office" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3">
+            <label asp-for="Description" class="control-label" title="Descripción del proyecto"></label>
+            <textarea disabled asp-for="Description" type="text" rows="5" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3">
+            <label asp-for="Objectives" class="control-label" title="Objetivos del Proyecto"></label>
+            <textarea disabled asp-for="Objectives" type="text" rows="5" class="form-control"></textarea>
+            <span asp-validation-for="Objectives" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="Cost" class="control-label" title="Costo estimado del proyecto"></label>
+            @Html.TextBoxFor(m => m.Cost, "{0:n2}", new { @class= "form-control", disabled="disabled"})
+            <span asp-validation-for="Cost" class="text-danger"></span>
+        </div>
+        <div class="form-group mb-3 col-sm-6">
+            <label asp-for="CostDate" class="control-label" title="Fecha en la que se estimó el costo del proyecto."></label>
+            <input disabled asp-for="CostDate" type="date" class="form-control">
+            <span asp-validation-for="CostDate" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div hidden class="form-group mb-3" id="divLocation">
+            <label asp-for="Location" class="control-label" title="Ubiación georreferenciada del proyecto."></label>
+            <textarea asp-for="Location" type="hidden" rows="5" class="form-control" hidden></textarea>
+            <span asp-validation-for="Location" class="text-danger"></span>
+        </div>
+        <div id="LocationMapDiv" class="full-map-container"></div>
+    </div>
+    <div class="row">
+    </div>
+    <div class="row">
+    </div>
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+    <div class="mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+    </div>
+
+
+
+
+</form>
+<hr class="mb-5 mt-5" />
+<div class="row mb-5">
+    <div class="col-12 col-sm-12 col-lg-10 col-xl-8">
+        <div class="group-children">
+            <h4>Fuentes de financiamiento</h4>
+
+            <!-- select table -->
+            <table class="table select-table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameForInnerType((ProjectSource s) => s.Source) <i class=@ViewBag.sourceIcon></i>
+                        </th>
+                        <th>
+                            @Html.DisplayNameForInnerType((ProjectSource s) => s.Percentage) <i class=@ViewBag.percentageIcon></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ProjectSources?.Count() > 0)
+                    {
+                        @foreach (var projectSource in Model.ProjectSources)
+                        {
+                            <tr>
+                                <td class="sel-row">
+                                    @if (projectSource.Source_info != null) @Html.DisplayFor(modelItem => projectSource.Source_info.Name)
+                                </td>
+                                <td class="sel-row">
+                                    @Html.DisplayFor(modelItem => projectSource.Percentage)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+<hr class="mb-5 mt-5" />
+<div class="row mb-5">
+    <div class="col-12 col-sm-12 col-lg-10 col-xl-8">
+        <div class="group-children">
+            <h4>Anexos</h4>
+
+            <!-- select table -->
+            <table class="table select-table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameForInnerType((ProjectAttachment s) => s.Title) <i class=@ViewBag.titleIcon></i>
+                        </th>
+                        <th>
+                            Descargar
+                        </th>
+                        <th>
+                            @Html.DisplayNameForInnerType((ProjectAttachment s) => s.DateAttached) <i class=@ViewBag.dateAttachedIcon></i>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ProjectAttachments?.Count() > 0)
+                    {
+                        @foreach (var projectAttachment in Model.ProjectAttachments)
+                        {
+                            <tr>
+                                <td class="sel-row">
+                                    @Html.DisplayFor(modelItem => projectAttachment.Title)
+                                </td>
+                                <td class="sel-row">
+                                    <a asp-area="" asp-controller="ProjectAttachment" asp-action="Download" asp-route-serverFileName="@projectAttachment.FileName" asp-route-downloadName="@projectAttachment.Title" asp-route-projectId=@ViewBag.projectId class="btn btn-link">
+                                        <i class="bi-download"></i>
+                                    </a>
+                                </td>
+                                <td class="sel-row">
+                                    @Html.DisplayFor(modelItem => projectAttachment.DateAttached)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+<!-- Map Manager -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/@@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script src="https://unpkg.com/@@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>
+<!-- geocoder: https://github.com/perliedman/leaflet-control-geocoder -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<!-- basemap: https://github.com/clavijojuan/L.switchBasemap -->
+<link rel="stylesheet" href="~/css/L.switchBasemap.css" />
+<script src="~/js/L.switchBasemap.js"></script>
+
+<script src="~/js/maplib.js"></script>
+<script>
+
+    captureMap('LocationMapDiv', 'Location', false, @ProjectGlobals.defaultLatitude, @ProjectGlobals.defaultLongitude);
+
+    $('#FormProject').submit(function () {
+        getMapInfo();
+    });
+</script>

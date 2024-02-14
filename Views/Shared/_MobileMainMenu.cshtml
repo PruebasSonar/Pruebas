@@ -1,0 +1,241 @@
+﻿@using PIPMUNI_ARG.Models.Domain;
+@using System.Text.Json;
+@{
+    string? textContract = Context.Session.GetString("contract");
+    Contract? sessionConctract = (!string.IsNullOrEmpty(textContract)) ? JsonSerializer.Deserialize<Contract>(textContract) : null;
+}
+<!-- Mobile Main Menu -->
+<nav class="mob-main-mnu">
+    <div class="mob-main-mnu-content">
+        <ul class="mob-main-mnu-list">
+
+            <!-- Begin Authenticated Mobile Options -->
+            @if (@User.Identity?.IsAuthenticated ?? false)
+            {
+
+                @if (User.IsInRole(ProjectGlobals.RoleDireccion))
+                {
+                    <li>
+                        <a data-title="Pendientes" asp-area="Review" asp-controller="Approval" asp-action="Payments">
+                            <span>Pendientes</span>
+                        </a>
+                    </li>
+                }
+
+
+                @if (User.IsInRole(ProjectGlobals.RoleDireccion)
+               || User.IsInRole(ProjectGlobals.RoleOperacion)
+               || User.IsInRole(ProjectGlobals.RoleAdmin)
+               || User.IsInRole(ProjectGlobals.RoleConsulta)
+               )
+                {
+
+                    <li>
+                        <a href="#!" data-title="Obra">
+                            <span>Obra</span>
+                        </a>
+                        <div class="mmm-btn"><i class="material-icons md-24">expand_more</i></div>
+                        <div class="mob-main-submnu">
+                            <div class="mob-main-submnu-item">
+                                <ul>
+                                    <li>
+                                        <a data-title="Seleccionar" asp-area="" asp-controller="Contract" asp-action="Select">
+                                            <span>Seleccionar</span>
+                                        </a>
+                                    </li>
+                                    @if (User.IsInRole(ProjectGlobals.RoleDireccion)
+                                   || User.IsInRole(ProjectGlobals.RoleAdmin))
+                                    {
+                                        @if (sessionConctract?.Id > 0)
+                                        {
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a data-title="Editar" asp-area="" asp-controller="Contract" asp-action="Edit">
+                                                    <span>Editar</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a data-title="Fuentes Financ." asp-area="" asp-controller="ProjectSource" asp-action="Index">
+                                                    <span>Fuentes Financ.</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a data-title="Certificados" asp-area="" asp-controller="Payment" asp-action="Index">
+                                                    <span>Certificados</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a data-title="Redeterminaciones" asp-area="" asp-controller="Addition" asp-action="Index">
+                                                    <span>Redeterminaciones</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a data-title="Variantes" asp-area="" asp-controller="Variante" asp-action="Index">
+                                                    <span>Variantes</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a data-title="Ampliaciones" asp-area="" asp-controller="Extension" asp-action="Index">
+                                                    <span>Ampliaciones</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a data-title="Media" asp-area="Review" asp-controller="Media" asp-action="Index">
+                                                    <span>Media</span>
+                                                </a>
+                                            </li>
+                                        }
+                                        <li><hr class="dropdown-divider"></li>
+
+                                        <li>
+                                            <a data-title="Crear" asp-area="" asp-controller="Project" asp-action="Create">
+                                                <span>Crear</span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                }
+
+
+                @if (User.IsInRole(ProjectGlobals.RoleAdmin)
+               || User.IsInRole(ProjectGlobals.RoleDireccion)
+               || User.IsInRole(ProjectGlobals.RoleOperacion)
+               || User.IsInRole(ProjectGlobals.RoleConsulta)
+               )
+                {
+                    <li>
+                        <a href="#!" data-title="Proyecto">
+                            <span>Proyecto</span>
+                        </a>
+                        <div class="mmm-btn"><i class="material-icons md-24">expand_more</i></div>
+                        <div class="mob-main-submnu">
+                            <div class="mob-main-submnu-item">
+                                <ul>
+                                    @if (sessionConctract?.Id > 0)
+                                    {
+                                        <li>
+                                            <a asp-area="" asp-controller="Project" asp-action="Display" asp-route-Id=@sessionConctract?.Project>
+                                                <span>Consultar</span>
+                                            </a>
+                                        </li>
+                                        @if (User.IsInRole(ProjectGlobals.RoleAdmin))
+                                        {
+                                            <li>
+                                                <a asp-area="" asp-controller="Project" asp-action="Edit" asp-route-Id=@sessionConctract?.Project>
+                                                    <span>Editar</span>
+                                                </a>
+                                            </li>
+                                        }
+                                    }
+                                    @if (User.IsInRole(ProjectGlobals.RoleAdmin)
+                                   || User.IsInRole(ProjectGlobals.RoleDireccion))
+                                    {
+                                        <li>
+                                            <a asp-area="" asp-controller="Project" asp-action="Create">
+                                                <span>Crear</span>
+                                            </a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                }
+
+
+                @if (User.IsInRole(ProjectGlobals.RoleAdmin)
+               || User.IsInRole(ProjectGlobals.RoleDireccion)
+               || User.IsInRole(ProjectGlobals.RoleOperacion)
+               || User.IsInRole(ProjectGlobals.RoleConsulta)
+               )
+                {
+                    <li>
+                        <a href="#!" data-title="Reportes">
+                            <span>Reportes</span>
+                        </a>
+                        <div class="mmm-btn"><i class="material-icons md-24">expand_more</i></div>
+                        <div class="mob-main-submnu">
+                            <div class="mob-main-submnu-item">
+                                <ul>
+                                    <li>
+                                        <a data-title="Listado General" asp-area="AppReports" asp-controller="BasicInfo" asp-action="Index">
+                                            <span>Listado General</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a data-title="Avance" asp-area="AppReports" asp-controller="Performance" asp-action="Index">
+                                            <span>Avance</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                }
+
+
+                <li>
+                    <a href="#!" data-title="Configuración">
+                        <span>Configuración</span>
+                    </a>
+                    <div class="mmm-btn"><i class="material-icons md-24">expand_more</i></div>
+                    <div class="mob-main-submnu">
+                        <div class="mob-main-submnu-item">
+                            <ul>
+                                <li>
+                                    <a data-title="Cambiar Contraseña" asp-area="UserAdmin" asp-controller="Home" asp-action="ChangePassword">
+                                        <span>Cambiar Contraseña</span>
+                                    </a>
+                                </li>
+                                @if (User.IsInRole(ProjectGlobals.RoleAdmin))
+                                {
+                                    <li>
+                                        <a data-title="Usuarios" asp-area="UserAdmin" asp-controller="Home" asp-action="Index">
+                                            <span>Usuarios</span>
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a data-title="Contratistas" asp-area="" asp-controller="Contractor" asp-action="Index">
+                                            <span>Contratistas</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a data-title="Fuentes Financ." asp-area="" asp-controller="FundingSource" asp-action="Index">
+                                            <span>Fuentes Financ.</span>
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a data-title="Sectores" asp-area="" asp-controller="Sector" asp-action="Index">
+                                            <span>Sectores</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a data-title="Subsectores" asp-area="" asp-controller="Subsector" asp-action="Index">
+                                            <span>Subsectores</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a data-title="Oficinas" asp-area="" asp-controller="Office" asp-action="Index">
+                                            <span>Áreas Responsables</span>
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+
+            }
+            <!-- end Authenticated Mobile Options -->
+
+            <partial name="_LoginPartial" />
+
+        </ul>
+    </div>
+</nav>
+<!-- End mobile main menu -->

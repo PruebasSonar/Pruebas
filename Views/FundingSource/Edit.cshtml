@@ -1,0 +1,88 @@
+@using PIPMUNI_ARG.Models.Domain;
+@model FundingSource
+@{
+    ViewData["Title"] = "Editar Organísmos de Financiamiento";
+    ViewData["isBasicView"] = true;
+}
+
+@await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+<form id="FormFundingSource" asp-action="Edit" class="mt-2" asp-route-returnUrl="@ViewBag.returnUrl" asp-route-bufferedUrl="@ViewBag.bufferedUrl">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="row">
+        <input type="hidden" asp-for="Id" />
+    </div>
+    <div class="row">
+        <div class="form-group mb-3" id="divName">
+            <label asp-for="Name" class="control-label" title="Nombre que identifica a la agencia de financiamiento o la entidad que financia el proyecto."></label>
+            <input asp-for="Name" type="text" class="form-control">
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group mb-3" id="divAcronym">
+            <label asp-for="Acronym" class="control-label" title="La sigla o abreviatura que permite identificar la entidad financiadora con un texto breve. Para ser utilizada en reportes."></label>
+            <input asp-for="Acronym" type="text" class="form-control">
+            <span asp-validation-for="Acronym" class="text-danger"></span>
+        </div>
+    </div>
+
+
+    @await Html.PartialAsync("/Views/Shared/JaosLib/_ResultMessages.cshtml",ViewData)
+
+    <div class="mt-5">
+        @{
+            <!-- return button -->
+            if (!string.IsNullOrEmpty(ViewBag.returnUrl))
+            {
+                string returnlink = @ViewBag.returnUrl;
+                if (!string.IsNullOrEmpty(ViewBag.bufferedUrl))
+                {
+                    if (!returnlink.Contains("returnUrl"))
+                    {
+                        string separator = (returnlink.Contains('?')) ? "&" : "?";
+                        returnlink += string.Format("{0}returnUrl={1}", separator, ViewBag.bufferedUrl);
+                    }
+                }
+                <a href=@returnlink formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+            else
+            {
+                <a id="goBack" href="javascript:void(0);" formnovalidate class="btn btn-basic"><i class="bi-arrow-90deg-left"></i>&nbsp; Regresar</a>
+            }
+        }
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteConfirmation"><i class="bi bi-x-lg"></i>&nbsp; Borrar</button>
+        <button type="submit"  class="btn btn-primary"><i class="bi bi-check-lg"></i>&nbsp; Guardar</button>
+    </div>
+
+
+
+    @* Confirm before deleting *@
+    <div class="modal fade" id="deleteConfirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Advertencia de Borrado</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Está a punto de eliminar la información de Organísmos de Financiamiento..</p>
+                    Confirme si desea continuar?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Conservar</button>
+                    <button type="submit" formnovalidate class="btn btn-danger" asp-action="Delete" asp-route-id="@Model.Id" asp-route-returnUrl="@ViewBag.returnUrl">Borrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

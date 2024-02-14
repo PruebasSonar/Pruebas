@@ -1,0 +1,8 @@
+﻿@model JaosLib.Models.JaoTables.JaoTable
+@{
+    ViewBag.Title = @Model.reportTitle;
+    ViewBag.NoContainer = true;
+}
+
+
+@await Html.PartialAsync("/Views/Shared/JaosLib/_JaoTableDisplay.cshtml",Model)
