@@ -15,7 +15,7 @@
     <div class="row">
         <div class="form-group mb-3" id="divProject">
             <label asp-for="Project" class="control-label" title="Proyecto al que corresponde la obra."></label>
-            <select asp-for="Project" name="Project" class="searchableSelect" style="height: 3em !important;" asp-items="ViewBag.listProject" id="Project"></select>
+            <select asp-for="Project" name="Project" class="searchableSelect" asp-items="ViewBag.listProject" id="Project"></select>
             <span asp-validation-for="Project" class="text-danger"></span>
         </div>
     </div>
